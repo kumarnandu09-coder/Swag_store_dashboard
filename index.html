@@ -209,6 +209,1237 @@ table.breakdown{min-width:920px}
   .topbar-chips .chip{flex:1;justify-content:center}
   .toast{bottom:16px}
 }
+
+/* ---- settings & team ---- */
+.settings-grid{max-width:680px;display:flex;flex-direction:column;gap:18px}
+.settings-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.settings-group{padding:20px;border-bottom:1px solid var(--border)}
+.group-title{font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.field-hint{font-size:11px;color:var(--text3);margin-top:6px;line-height:1.5}
+.settings-foot{padding:14px 20px;display:flex;justify-content:flex-end}
+.data-actions{display:flex;gap:10px;flex-wrap:wrap}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--purple-d);color:var(--purple-t);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.role-fixed{font-size:12px;color:var(--text2);font-weight:600}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.role-row{display:flex;flex-direction:column;gap:2px;padding:10px 18px;border-bottom:1px solid var(--border);font-size:12px}
+.role-row:last-child{border-bottom:none}
+.role-row span{color:var(--text3)}
+.pad{padding:16px 18px}
+.pad p{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+table.team-table{min-width:520px}
+table.team-table td{vertical-align:middle}
+.note{font-size:11px;color:var(--text3);line-height:1.5;margin-top:4px}
+@media(max-width:900px){.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">Game<span>Store</span></div>
+    <div class="logo-sub">Owner Dashboard</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-sec">Catalogue</div>
+    <div class="nav-item active" data-tab="items" onclick="gotoTab('items')"><i class="ti ti-layout-grid"></i>All Items</div>
+    <div class="nav-item" data-tab="offers" onclick="gotoTab('offers')"><i class="ti ti-tag"></i>Offers & Promotions</div>
+    <div class="nav-sec">Insights</div>
+    <div class="nav-item" data-tab="analytics" onclick="gotoTab('analytics')"><i class="ti ti-chart-dots-3"></i>Analytics</div>
+    <div class="nav-item" data-tab="inventory" onclick="gotoTab('inventory')"><i class="ti ti-package"></i>Inventory</div>
+    <div class="nav-sec">Admin</div>
+    <div class="nav-item" data-tab="settings" onclick="gotoTab('settings')"><i class="ti ti-settings"></i>Settings</div>
+    <div class="nav-item" data-tab="team" onclick="gotoTab('team')"><i class="ti ti-users"></i>Team</div>
+  </nav>
+</aside>
+
+<div class="main">
+  <div class="proto-banner"><i class="ti ti-flask"></i><span><b>Design prototype</b> — sales, buyer and demographic figures are mock data. Your changes are saved in this browser only.</span><button onclick="resetDemo()">Reset demo data</button></div>
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="pg-title">All Items</div>
+      <div class="page-sub" id="pg-sub">Manage your store catalogue</div>
+    </div>
+    <div class="topbar-chips">
+      <button class="chip chip-accent" onclick="openModal('upload')"><i class="ti ti-upload" style="font-size:12px"></i>Upload item</button>
+      <button class="chip" onclick="openModal('offer')"><i class="ti ti-tag" style="font-size:12px"></i>Create offer</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="tab-row">
+      <button class="tab-btn active" id="tb-items" onclick="gotoTab('items')"><i class="ti ti-layout-grid" style="font-size:13px"></i>Items</button>
+      <button class="tab-btn" id="tb-offers" onclick="gotoTab('offers')"><i class="ti ti-tag" style="font-size:13px"></i>Offers</button>
+      <button class="tab-btn" id="tb-analytics" onclick="gotoTab('analytics')"><i class="ti ti-chart-bar" style="font-size:13px"></i>Analytics</button>
+      <button class="tab-btn" id="tb-inventory" onclick="gotoTab('inventory')"><i class="ti ti-package" style="font-size:13px"></i>Inventory</button>
+      <button class="tab-btn" id="tb-settings" onclick="gotoTab('settings')"><i class="ti ti-settings" style="font-size:13px"></i>Settings</button>
+      <button class="tab-btn" id="tb-team" onclick="gotoTab('team')"><i class="ti ti-users" style="font-size:13px"></i>Team</button>
+    </div>
+
+    <!-- ITEMS -->
+    <div id="panel-items" class="panel active">
+      <div class="toolbar">
+        <div class="cat-pills" id="cat-pills">
+          <button class="pill active" data-cat="all" onclick="setCat('all')">All</button>
+          <button class="pill" data-cat="avatar" onclick="setCat('avatar')">Avatar</button>
+          <button class="pill" data-cat="profile" onclick="setCat('profile')">Profile</button>
+          <button class="pill" data-cat="banner" onclick="setCat('banner')">Banners</button>
+          <button class="pill" data-cat="frame" onclick="setCat('frame')">Frames</button>
+          <button class="pill" data-cat="effect" onclick="setCat('effect')">Effects</button>
+        </div>
+        <select class="sel" id="sort-sel" onchange="renderItems()">
+          <option value="def">Default</option>
+          <option value="low">Price: Low to High</option>
+          <option value="high">Price: High to Low</option>
+          <option value="sold">Most sold</option>
+          <option value="stock">Low stock first</option>
+        </select>
+      </div>
+      <div class="item-grid" id="item-grid"></div>
+    </div>
+
+    <!-- OFFERS -->
+    <div id="panel-offers" class="panel">
+      <div class="stat-row stat-row-3">
+        <div class="stat-card"><div class="stat-label">Active offers</div><div class="stat-val" id="off-cnt" style="color:var(--green-t)">0</div><div class="stat-change">Running now</div></div>
+        <div class="stat-card"><div class="stat-label">Avg. discount</div><div class="stat-val" id="off-avg" style="color:var(--amber-t)">0%</div><div class="stat-change">Across active</div></div>
+        <div class="stat-card"><div class="stat-label">Promo revenue</div><div class="stat-val" id="off-rev" style="color:var(--purple-t)">₹0</div><div class="stat-change" id="off-rev-sub">0 units sold via offers</div></div>
+      </div>
+      <div class="offers-grid" id="offers-grid"></div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div id="panel-analytics" class="panel">
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-label">Total revenue</div><div class="stat-val" id="an-rev" style="color:var(--purple-t)">—</div><div class="stat-change" id="an-rev-sub"></div></div>
+        <div class="stat-card"><div class="stat-label">Units sold</div><div class="stat-val" id="an-sold">—</div><div class="stat-change" id="an-sold-sub"></div></div>
+        <div class="stat-card"><div class="stat-label">Avg. order value</div><div class="stat-val" id="an-aov" style="color:var(--amber-t)">—</div><div class="stat-change" id="an-aov-sub"></div></div>
+        <div class="stat-card"><div class="stat-label">Stock remaining</div><div class="stat-val" id="an-stk">—</div><div class="stat-change" id="an-stk-sub"></div></div>
+      </div>
+
+      <div class="filter-card">
+        <div class="filter-title"><i class="ti ti-adjustments-horizontal" style="color:var(--purple-t);font-size:16px"></i>Filter by buyer demographics</div>
+        <div class="filter-row">
+          <div class="fg"><label>Age group</label>
+            <select id="f-age" onchange="updateAnalytics()">
+              <option value="all">All ages</option>
+              <option value="13-18">13–18</option><option value="19-25">19–25</option>
+              <option value="26-35">26–35</option><option value="36-50">36–50</option><option value="50+">50+</option>
+            </select></div>
+          <div class="fg"><label>Gender</label>
+            <select id="f-gender" onchange="updateAnalytics()">
+              <option value="all">All genders</option>
+              <option value="male">Male</option><option value="female">Female</option>
+              <option value="nonbinary">Non-binary</option><option value="prefer-not">Prefer not to say</option>
+            </select></div>
+          <div class="fg"><label>Marital status</label>
+            <select id="f-marital" onchange="updateAnalytics()">
+              <option value="all">All</option>
+              <option value="single">Single</option><option value="married">Married</option>
+              <option value="divorced">Divorced</option><option value="widowed">Widowed</option>
+            </select></div>
+          <div class="fg"><label>Zodiac sign</label>
+            <select id="f-zodiac" onchange="updateAnalytics()">
+              <option value="all">All signs</option>
+              <option>Aries</option><option>Taurus</option><option>Gemini</option><option>Cancer</option>
+              <option>Leo</option><option>Virgo</option><option>Libra</option><option>Scorpio</option>
+              <option>Sagittarius</option><option>Capricorn</option><option>Aquarius</option><option>Pisces</option>
+            </select></div>
+        </div>
+      </div>
+
+      <div id="an-empty"></div>
+      <div id="an-body">
+      <div class="chart-row">
+        <div class="chart-card"><div class="chart-ttl">Revenue by category</div><div class="chart-sub">Total earnings per item type</div><canvas id="bar-chart"></canvas><p class="chart-fail" hidden>Chart couldn’t load (offline?). The tables still work.</p></div>
+        <div class="chart-card"><div class="chart-ttl">Sales distribution</div><div class="chart-sub">Units sold share per category</div><canvas id="donut-chart"></canvas><p class="chart-fail" hidden>Chart couldn’t load (offline?). The tables still work.</p></div>
+      </div>
+
+      <div class="sec-wrap">
+        <div class="sec-head">
+          <div class="sec-title"><i class="ti ti-table-column" style="color:var(--purple-t)"></i>Category breakdown — who's buying what</div>
+          <span style="font-size:11px;color:var(--text3)">Gender · Age · Zodiac · Location — all in one view</span>
+        </div>
+        <div style="overflow-x:auto">
+        <table class="breakdown">
+          <thead><tr>
+            <th>Category</th><th>Sold</th><th>Revenue</th>
+            <th>By gender</th><th>By age group</th><th>By zodiac</th><th>By location</th>
+          </tr></thead>
+          <tbody id="breakdown-body"></tbody>
+        </table>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <!-- INVENTORY -->
+    <div id="panel-inventory" class="panel">
+      <div class="sec-wrap">
+        <div class="sec-head">
+          <div class="sec-title"><i class="ti ti-package" style="color:var(--purple-t)"></i>Full inventory &nbsp;<span id="inv-total" style="color:var(--text3);font-weight:400"></span></div>
+          <button class="chip chip-accent" onclick="openModal('upload')"><i class="ti ti-plus" style="font-size:12px"></i>Add item</button>
+        </div>
+        <div style="overflow-x:auto">
+        <table class="wide">
+          <thead><tr><th>Item</th><th>Cat.</th><th>Price</th><th>Offer price</th><th>Active offer</th><th>Stock</th><th>Sold</th><th>Revenue</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="inv-body"></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="panel-settings" class="panel">
+      <div class="settings-grid">
+        <form class="settings-card" onsubmit="saveSettings(event)" novalidate>
+          <div class="settings-group">
+            <div class="group-title"><i class="ti ti-building-store" style="color:var(--purple-t);font-size:16px"></i>Store profile</div>
+            <div class="form-row"><label class="form-label" for="st-name">Store name</label><input class="form-input" id="st-name" maxlength="40" autocomplete="off"><div class="err" id="err-st-name"></div></div>
+            <div class="form-row" style="margin-bottom:0"><label class="form-label" for="st-email">Support email <span class="hint">(optional)</span></label><input class="form-input" id="st-email" inputmode="email" placeholder="support@yourstore.com" autocomplete="off"><div class="err" id="err-st-email"></div></div>
+          </div>
+          <div class="settings-group">
+            <div class="group-title"><i class="ti ti-alert-triangle" style="color:var(--amber-t);font-size:16px"></i>Inventory alerts</div>
+            <div class="form-row" style="margin-bottom:0"><label class="form-label" for="st-low">Low-stock level</label><input class="form-input" id="st-low" type="number" inputmode="numeric" min="1" max="999" step="1"><div class="err" id="err-st-low"></div><div class="field-hint">Items with fewer units than this get a “Low stock” warning in Inventory and Analytics.</div></div>
+          </div>
+          <div class="settings-group" style="border-bottom:none">
+            <div class="group-title"><i class="ti ti-tag" style="color:var(--green-t);font-size:16px"></i>Offers</div>
+            <div class="form-row" style="margin-bottom:0"><label class="form-label" for="st-days">Default offer length (days)</label><input class="form-input" id="st-days" type="number" inputmode="numeric" min="1" max="90" step="1"><div class="err" id="err-st-days"></div><div class="field-hint">Pre-fills the end date when you create a new offer.</div></div>
+          </div>
+          <div class="settings-foot" style="border-top:1px solid var(--border)"><button type="submit" class="btn-primary">Save settings</button></div>
+        </form>
+        <div class="settings-card">
+          <div class="settings-group" style="border-bottom:none">
+            <div class="group-title"><i class="ti ti-database" style="color:var(--blue-t);font-size:16px"></i>Data &amp; sharing</div>
+            <div class="data-actions">
+              <button type="button" class="btn-cancel" onclick="exportCSV()"><i class="ti ti-download" style="margin-right:6px"></i>Download sales report (CSV)</button>
+              <button type="button" class="btn-cancel" onclick="resetDemo()"><i class="ti ti-refresh" style="margin-right:6px"></i>Reset demo data</button>
+            </div>
+            <div class="field-hint" style="margin-top:12px">Everything here is mock data stored in this browser only.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAM -->
+    <div id="panel-team" class="panel">
+      <div class="sec-wrap">
+        <div class="sec-head">
+          <div class="sec-title"><i class="ti ti-users" style="color:var(--purple-t)"></i>Team &nbsp;<span id="team-count" style="color:var(--text3);font-weight:400"></span></div>
+          <button class="chip chip-accent" onclick="openModal('invite')"><i class="ti ti-user-plus" style="font-size:12px"></i>Invite member</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="team-table">
+            <thead><tr><th>Member</th><th>Role</th><th>Status</th><th></th></tr></thead>
+            <tbody id="team-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="team-empty" style="margin-bottom:22px"></div>
+      <div class="two-col">
+        <div class="sec-wrap">
+          <div class="sec-head"><div class="sec-title"><i class="ti ti-shield-check" style="color:var(--green-t)"></i>Roles</div></div>
+          <div id="roles-list"></div>
+          <div class="pad" style="padding-top:10px"><div class="note">Prototype: roles are labels only — access isn’t actually restricted.</div></div>
+        </div>
+        <div class="sec-wrap">
+          <div class="sec-head"><div class="sec-title"><i class="ti ti-share-3" style="color:var(--amber-t)"></i>Share with stakeholders</div></div>
+          <div class="pad">
+            <p>Give marketing and business teammates a view of sales, offers and the buyer breakdown so they can plan campaigns from the same numbers.</p>
+            <div class="data-actions">
+              <button type="button" class="btn-primary" onclick="copyLink()"><i class="ti ti-link" style="margin-right:6px"></i>Copy dashboard link</button>
+              <button type="button" class="btn-cancel" onclick="exportCSV()"><i class="ti ti-download" style="margin-right:6px"></i>Sales report (CSV)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: UPLOAD -->
+<div class="modal-overlay" id="modal-upload">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="up-title">
+    <div class="modal-head">
+      <div class="modal-title" id="up-title"><i class="ti ti-upload" style="font-size:14px;margin-right:6px;vertical-align:-1px;color:var(--purple-t)"></i>Upload new item</div>
+      <button class="modal-close" onclick="closeModal('upload')" aria-label="Close"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="upload-zone" id="upload-zone" tabindex="0" role="button" aria-label="Upload an image"
+             onclick="pickFile()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();pickFile()}"
+             ondragover="dragOver(event)" ondragleave="dragLeave()" ondrop="dropFile(event)">
+          <i class="ti ti-photo-up"></i>
+          <p>Click to upload image or drag and drop</p>
+          <p style="font-size:11px;color:var(--text3);margin-top:4px">PNG, JPG, GIF, WebP, SVG — up to 5 MB</p>
+        </div>
+        <input type="file" id="file-inp" accept="image/*" style="display:none">
+        <div class="file-preview" id="file-preview" style="display:none">
+          <img id="preview-img" alt="Preview of the uploaded image">
+          <button type="button" class="icon-btn danger" onclick="clearImage()"><i class="ti ti-trash"></i>Remove image</button>
+        </div>
+        <div class="err" id="err-file-inp"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Or pick an emoji <span class="hint">(used when there’s no image)</span></div>
+        <div class="emoji-grid" id="emoji-grid"></div>
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label" for="up-name">Item name</label><input class="form-input" id="up-name" placeholder="e.g. Shadow Warrior" maxlength="60" autocomplete="off"><div class="err" id="err-up-name"></div></div>
+        <div><label class="form-label" for="up-cat">Category</label>
+          <select class="form-input" id="up-cat">
+            <option value="avatar">Avatar</option><option value="profile">Profile</option>
+            <option value="banner">Banner</option><option value="frame">Frame</option><option value="effect">Effect</option>
+          </select></div>
+      </div>
+      <div class="form-row"><label class="form-label" for="up-desc">Description <span class="hint">(optional)</span></label><input class="form-input" id="up-desc" placeholder="Short description" autocomplete="off"><div class="err" id="err-up-desc"></div></div>
+      <div class="form-row-2">
+        <div><label class="form-label" for="up-price">Price (₹)</label><input class="form-input" id="up-price" type="number" inputmode="numeric" placeholder="299" min="1" step="1"><div class="err" id="err-up-price"></div></div>
+        <div><label class="form-label" for="up-stock">Stock quantity</label><input class="form-input" id="up-stock" type="number" inputmode="numeric" placeholder="100" min="1" step="1"><div class="err" id="err-up-stock"></div></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeModal('upload')">Cancel</button>
+      <button class="btn-primary" onclick="addItem()">Add to catalogue</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: OFFER -->
+<div class="modal-overlay" id="modal-offer">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="off-title">
+    <div class="modal-head">
+      <div class="modal-title" id="off-title"><i class="ti ti-tag" style="font-size:14px;margin-right:6px;vertical-align:-1px;color:var(--amber-t)"></i>Create promotion</div>
+      <button class="modal-close" onclick="closeModal('offer')" aria-label="Close"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label class="form-label" for="off-name">Offer name</label><input class="form-input" id="off-name" placeholder="e.g. Weekend Flash Sale" maxlength="60" autocomplete="off"><div class="err" id="err-off-name"></div></div>
+      <div class="form-row"><label class="form-label" for="off-item">Apply to</label>
+        <select class="form-input" id="off-item"></select><div class="err" id="err-off-item"></div></div>
+      <div class="form-row-2">
+        <div><label class="form-label" for="off-disc">Discount %</label><input class="form-input" id="off-disc" type="number" inputmode="numeric" placeholder="20" min="1" max="90" step="1"><div class="err" id="err-off-disc"></div></div>
+        <div><label class="form-label" for="off-type">Offer type</label>
+          <select class="form-input" id="off-type">
+            <option value="flash">Flash sale</option><option value="bundle">Bundle deal</option>
+            <option value="seasonal">Seasonal</option><option value="loyalty">Loyalty reward</option><option value="new">New launch</option>
+          </select></div>
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label" for="off-start">Start date</label><input class="form-input" id="off-start" type="date"><div class="err" id="err-off-start"></div></div>
+        <div><label class="form-label" for="off-end">End date</label><input class="form-input" id="off-end" type="date"><div class="err" id="err-off-end"></div></div>
+      </div>
+      <div class="form-row"><label class="form-label" for="off-msg">Promo message <span class="hint">(optional, shown to users)</span></label><input class="form-input" id="off-msg" placeholder="e.g. Limited time — 20% off avatars!" autocomplete="off"><div class="err" id="err-off-msg"></div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeModal('offer')">Cancel</button>
+      <button class="btn-primary" onclick="saveOffer()">Launch offer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: INVITE -->
+<div class="modal-overlay" id="modal-invite">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="inv-title">
+    <div class="modal-head">
+      <div class="modal-title" id="inv-title"><i class="ti ti-user-plus" style="font-size:14px;margin-right:6px;vertical-align:-1px;color:var(--purple-t)"></i>Invite team member</div>
+      <button class="modal-close" onclick="closeModal('invite')" aria-label="Close"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label class="form-label" for="inv-name">Full name</label><input class="form-input" id="inv-name" placeholder="e.g. Priya Nair" maxlength="60" autocomplete="off"><div class="err" id="err-inv-name"></div></div>
+      <div class="form-row"><label class="form-label" for="inv-email">Work email</label><input class="form-input" id="inv-email" inputmode="email" placeholder="name@company.com" autocomplete="off"><div class="err" id="err-inv-email"></div></div>
+      <div class="form-row"><label class="form-label" for="inv-role">Role</label>
+        <select class="form-input" id="inv-role"><option>Manager</option><option selected>Marketing</option><option>Business</option><option>Viewer</option></select>
+        <div class="field-hint" id="inv-role-hint"></div></div>
+      <div class="note">Prototype: no email is actually sent.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeModal('invite')">Cancel</button>
+      <button class="btn-primary" onclick="sendInvite()">Send invite</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONFIRM -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal modal-sm" role="alertdialog" aria-modal="true" aria-labelledby="cf-title">
+    <div class="modal-body">
+      <div class="modal-title" id="cf-title" style="margin-bottom:8px"></div>
+      <p id="cf-text" style="font-size:13px;color:var(--text2);line-height:1.55"></p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeModal('confirm')">Cancel</button>
+      <button class="btn-primary" id="cf-ok" style="background:var(--red)" onclick="confirmYes()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const STORE_KEY='gamestore_owner_proto_v1';
+// Demo sales model: an offer of d% off lifts units sold by (d% × PROMO_LIFT) of an item's lifetime sales.
+const PROMO_LIFT=0.8;
+const MAX_IMG_MB=5;
+const CC={
+  avatar:{bg:'#241F5A',text:'#A29DF5',fill:'#534AB7'},
+  profile:{bg:'#0B3A29',text:'#5DCAA5',fill:'#1D9E75'},
+  banner:{bg:'#3A1A0B',text:'#F0997B',fill:'#D85A30'},
+  frame:{bg:'#17274A',text:'#85B7EB',fill:'#378ADD'},
+  effect:{bg:'#3A1F0B',text:'#FAC775',fill:'#EF9F27'},
+};
+const CATS=['avatar','profile','banner','frame','effect'];
+const CAT_NAMES={avatar:'Avatars',profile:'Profiles',banner:'Banners',frame:'Frames',effect:'Effects'};
+const TABS=['items','offers','analytics','inventory','settings','team'];
+const TITLES={
+  items:['All Items','Manage your store catalogue'],
+  offers:['Offers & Promotions','Create and manage promotional campaigns'],
+  analytics:['Analytics','Sales insights by demographic filters'],
+  inventory:['Inventory','Full stock and item management'],
+  settings:['Settings','Store profile, alerts and data'],
+  team:['Team','Invite colleagues and share the dashboard'],
+};
+const SEED=[
+  {id:1,cat:'avatar',name:'Shadow Warrior',desc:'Dark armored knight with flame shoulders',emoji:'🥷',price:299,stock:120,sold:88},
+  {id:2,cat:'avatar',name:'Neon Fox',desc:'Cyberpunk fox with glowing accents',emoji:'🦊',price:449,stock:80,sold:64},
+  {id:3,cat:'avatar',name:'Cosmic Mage',desc:'Purple-robed wizard with star effects',emoji:'🧙',price:599,stock:60,sold:52},
+  {id:4,cat:'avatar',name:'Dragon Rider',desc:'Classic knight mounted on dragon',emoji:'🐉',price:899,stock:40,sold:37},
+  {id:5,cat:'profile',name:'Midnight Theme',desc:'Deep blue dark mode profile layout',emoji:'🌙',price:149,stock:200,sold:178},
+  {id:6,cat:'profile',name:'Sakura Spring',desc:'Pink blossom animated background',emoji:'🌸',price:199,stock:150,sold:121},
+  {id:7,cat:'profile',name:'Gold Rush',desc:'Premium gold-accented layout',emoji:'✨',price:349,stock:100,sold:74},
+  {id:8,cat:'profile',name:'Space Odyssey',desc:'Animated stars and planets',emoji:'🚀',price:499,stock:80,sold:58},
+  {id:9,cat:'banner',name:'Victory Parade',desc:'Confetti celebration banner',emoji:'🎉',price:199,stock:200,sold:156},
+  {id:10,cat:'banner',name:'Storm Rising',desc:'Dark thunder and lightning artwork',emoji:'⛈️',price:299,stock:120,sold:94},
+  {id:11,cat:'banner',name:'Galaxy Wave',desc:'Deep space gradient panorama',emoji:'🌌',price:399,stock:100,sold:71},
+  {id:12,cat:'banner',name:'Neon City',desc:'Cyberpunk skyline at night',emoji:'🌃',price:499,stock:60,sold:42},
+  {id:13,cat:'frame',name:'Gold Classic',desc:'Ornate golden border frame',emoji:'🖼️',price:99,stock:300,sold:267},
+  {id:14,cat:'frame',name:'Diamond Edge',desc:'Crystal-clear sharp geometric frame',emoji:'💎',price:199,stock:200,sold:148},
+  {id:15,cat:'frame',name:'Fire Ring',desc:'Animated flames around profile picture',emoji:'🔥',price:349,stock:100,sold:83},
+  {id:16,cat:'frame',name:'Galaxy Halo',desc:'Rotating galaxy ring effect',emoji:'🌀',price:599,stock:60,sold:41},
+  {id:17,cat:'effect',name:'Confetti Burst',desc:'Celebration confetti on login',emoji:'🎊',price:149,stock:250,sold:198},
+  {id:18,cat:'effect',name:'Thunder Strike',desc:'Lightning bolt on profile action',emoji:'⚡',price:299,stock:150,sold:112},
+  {id:19,cat:'effect',name:'Snow Globe',desc:'Winter snowfall around avatar',emoji:'❄️',price:249,stock:120,sold:97},
+  {id:20,cat:'effect',name:'Inferno Aura',desc:'Raging fire surrounds your profile',emoji:'🔥',price:699,stock:50,sold:28},
+];
+const EMOJIS=['🥷','🦊','🧙','🐉','🌙','🌸','✨','🚀','🎉','⛈️','🌌','🌃','🖼️','💎','🔥','🌀','🎊','⚡','❄️','🎮','👾','🤖','🦸','🎭','🦄','🐺','🦅','🐲','🏆','🌟','💫','🎯','🎪','🎨','🛸','🌈'];
+
+const DEFAULT_SETTINGS={storeName:'GameStore',email:'',lowStock:50,offerDays:7};
+const ROLES={Owner:'Full access',Manager:'Edit catalogue and offers',Marketing:'Create offers, view analytics',Business:'View analytics, export reports',Viewer:'View only'};
+const EMAIL_RE=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+let ITEMS=[],OFFERS=[],UI={tab:'items',cat:'all'},SETTINGS={...DEFAULT_SETTINGS},TEAM=[];
+let pendingImg=null,selectedEmoji='🎮',barChart=null,donutChart=null,confirmCb=null,toastT=null,warnedStorage=false;
+
+/* ---------- helpers ---------- */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const inr=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+const pad=n=>String(n).padStart(2,'0');
+const dstr=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const todayStr=()=>dstr(new Date());
+const addDays=n=>{const d=new Date();d.setDate(d.getDate()+n);return dstr(d)};
+const num=v=>String(v).trim()===''?NaN:Number(v);
+
+function toast(msg,kind){
+  const t=$('toast');t.textContent=msg;t.className='toast show'+(kind==='warn'?' warn':'');
+  clearTimeout(toastT);toastT=setTimeout(()=>{t.className='toast'},4200);
+}
+
+/* ---------- persistence (localStorage, with graceful fallback) ---------- */
+function seedTeam(){return[
+  {id:1,name:'You',email:'owner@yourstore.com',role:'Owner',status:'active'},
+  {id:2,name:'Priya Nair',email:'priya@yourstore.com',role:'Marketing',status:'active'},
+  {id:3,name:'Rahul Mehta',email:'rahul@yourstore.com',role:'Business',status:'invited'}]}
+function normSettings(s){
+  const d={...DEFAULT_SETTINGS,...(s||{})};
+  if(typeof d.storeName!=='string'||!d.storeName.trim())d.storeName=DEFAULT_SETTINGS.storeName;
+  if(typeof d.email!=='string')d.email='';
+  if(!Number.isInteger(d.lowStock)||d.lowStock<1)d.lowStock=DEFAULT_SETTINGS.lowStock;
+  if(!Number.isInteger(d.offerDays)||d.offerDays<1)d.offerDays=DEFAULT_SETTINGS.offerDays;
+  return d;
+}
+function seedData(){return SEED.map(i=>({...i,revenue:i.sold*i.price,img:null}))}
+function save(){
+  try{
+    localStorage.setItem(STORE_KEY,JSON.stringify({v:1,items:ITEMS,offers:OFFERS,ui:UI,settings:SETTINGS,team:TEAM}));
+    return true;
+  }catch(e){
+    if(!warnedStorage){warnedStorage=true;toast('Couldn’t save to this browser (storage full or blocked) — changes will be lost on refresh.','warn')}
+    return false;
+  }
+}
+function load(){
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(raw){
+      const d=JSON.parse(raw);
+      if(d&&d.v===1&&Array.isArray(d.items)&&Array.isArray(d.offers)){
+        ITEMS=d.items;OFFERS=d.offers;UI=Object.assign(UI,d.ui||{});SETTINGS=normSettings(d.settings);TEAM=Array.isArray(d.team)&&d.team.length?d.team:seedTeam();return;
+      }
+    }
+  }catch(e){}
+  ITEMS=seedData();OFFERS=[];SETTINGS={...DEFAULT_SETTINGS};TEAM=seedTeam();
+}
+
+/* ---------- offers: status, lookup, and their effect on sales ---------- */
+function offerStatus(o){
+  const t=todayStr();
+  if(!o.active||t>o.end)return'ended';
+  if(t<o.start)return'scheduled';
+  return'live';
+}
+function targetsOf(o){return o.itemId==='all'?ITEMS:ITEMS.filter(i=>String(i.id)===String(o.itemId))}
+// A live offer on the specific item wins over a live store-wide offer.
+function getOffer(item){
+  const live=OFFERS.filter(o=>offerStatus(o)==='live');
+  return live.filter(o=>String(o.itemId)===String(item.id)).pop()||live.filter(o=>o.itemId==='all').pop()||null;
+}
+const salePrice=(item,o)=>o?Math.round(item.price*(1-o.disc/100)):item.price;
+// When an offer goes live, its sales are booked once: units up, stock down, revenue at the discounted price.
+function applyDueOffers(){
+  let changed=false;
+  OFFERS.forEach(o=>{
+    if(o.applied||offerStatus(o)!=='live')return;
+    let units=0,rev=0;
+    targetsOf(o).forEach(it=>{
+      const extra=Math.min(it.stock,Math.max(1,Math.round(it.sold*(o.disc/100)*PROMO_LIFT)));
+      if(extra<=0)return;
+      const p=Math.round(it.price*(1-o.disc/100));
+      it.sold+=extra;it.stock-=extra;it.revenue+=extra*p;units+=extra;rev+=extra*p;
+    });
+    o.applied=true;o.units=units;o.revenue=rev;changed=true;
+  });
+  return changed;
+}
+function findConflict(itemId,start,end){
+  const t=todayStr();
+  return OFFERS.find(o=>o.active&&o.end>=t&&o.start<=end&&start<=o.end&&(o.itemId==='all'||itemId==='all'||String(o.itemId)===String(itemId)));
+}
+
+/* ---------- forms: errors, modals ---------- */
+function setErr(field,msg){
+  const e=$('err-'+field);if(e)e.textContent=msg||'';
+  const i=$(field);if(i)i.classList.toggle('invalid',!!msg);
+  if(field==='file-inp')$('upload-zone').classList.toggle('invalid',!!msg);
+}
+function clearErrs(modal){
+  document.querySelectorAll('#modal-'+modal+' .err').forEach(e=>e.textContent='');
+  document.querySelectorAll('#modal-'+modal+' .invalid').forEach(e=>e.classList.remove('invalid'));
+}
+function failFields(list){ // list of [fieldId,message]
+  list.forEach(([f,m])=>setErr(f,m));
+  const first=$(list[0][0]);if(first&&first.focus&&first.type!=='file')first.focus();
+}
+
+function initEmojis(){
+  $('emoji-grid').innerHTML=EMOJIS.map(e=>`<div class="emoji-opt${e===selectedEmoji?' selected':''}" onclick="selectEmoji('${e}',this)">${e}</div>`).join('');
+}
+function selectEmoji(e,el){
+  selectedEmoji=e;
+  document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function resetUploadForm(){
+  ['up-name','up-desc','up-price','up-stock'].forEach(id=>$(id).value='');
+  $('up-cat').value=UI.cat!=='all'?UI.cat:'avatar';
+  selectedEmoji='🎮';pendingImg=null;$('file-inp').value='';showPreview();
+}
+function showPreview(){
+  $('file-preview').style.display=pendingImg?'flex':'none';
+  if(pendingImg)$('preview-img').src=pendingImg;
+}
+function clearImage(){pendingImg=null;$('file-inp').value='';showPreview();setErr('file-inp','')}
+function pickFile(){$('file-inp').click()}
+function dragOver(e){e.preventDefault();$('upload-zone').classList.add('drag')}
+function dragLeave(){$('upload-zone').classList.remove('drag')}
+function dropFile(e){e.preventDefault();dragLeave();handleFile(e.dataTransfer.files&&e.dataTransfer.files[0])}
+
+// Validates, then downsizes to ≤360px so many images fit in localStorage.
+function handleFile(file){
+  setErr('file-inp','');
+  if(!file)return;
+  if(!file.type||file.type.indexOf('image/')!==0){setErr('file-inp','That file isn’t an image. Use PNG, JPG, GIF, WebP or SVG.');return}
+  if(file.size>MAX_IMG_MB*1048576){setErr('file-inp','Image is '+(file.size/1048576).toFixed(1)+' MB — the limit is '+MAX_IMG_MB+' MB.');return}
+  const r=new FileReader();
+  r.onerror=()=>setErr('file-inp','Couldn’t read that file. Try another one.');
+  r.onload=()=>{
+    const im=new Image();
+    im.onerror=()=>setErr('file-inp','Couldn’t open that image. It may be corrupted.');
+    im.onload=()=>{
+      const iw=im.naturalWidth||300,ih=im.naturalHeight||300;
+      const s=Math.min(1,360/Math.max(iw,ih));
+      const w=Math.max(1,Math.round(iw*s)),h=Math.max(1,Math.round(ih*s));
+      const c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(im,0,0,w,h);
+      pendingImg=c.toDataURL('image/webp',.85);
+      showPreview();
+    };
+    im.src=r.result;
+  };
+  r.readAsDataURL(file);
+}
+
+function openModal(id,itemId){
+  clearErrs(id);
+  if(id==='upload'){resetUploadForm();initEmojis()}
+  if(id==='invite'){['inv-name','inv-email'].forEach(f=>$(f).value='');$('inv-role').value='Marketing';roleHint()}
+  if(id==='offer'){
+    const sel=$('off-item');
+    sel.innerHTML='<option value="all">All items (store-wide)</option>'+ITEMS.map(i=>`<option value="${i.id}">${esc(i.name)} — ₹${i.price}</option>`).join('');
+    sel.value=itemId?String(itemId):'all';
+    ['off-name','off-disc','off-msg'].forEach(f=>$(f).value='');
+    $('off-type').value='flash';
+    $('off-start').value=todayStr();$('off-end').value=addDays(SETTINGS.offerDays);
+    if(!ITEMS.length)setErr('off-item','Your catalogue is empty — add an item before creating an offer.');
+  }
+  $('modal-'+id).classList.add('open');
+  const f=$('modal-'+id).querySelector('input:not([type=file]):not([type=date])');
+  if(f&&window.matchMedia('(min-width:561px)').matches)f.focus();
+}
+function closeModal(id){$('modal-'+id).classList.remove('open')}
+
+function confirmDlg(title,text,okLabel,cb){
+  $('cf-title').textContent=title;$('cf-text').textContent=text;$('cf-ok').textContent=okLabel;
+  confirmCb=cb;$('modal-confirm').classList.add('open');
+}
+function confirmYes(){const cb=confirmCb;confirmCb=null;closeModal('confirm');if(cb)cb()}
+
+/* ---------- actions ---------- */
+function addItem(){
+  clearErrs('upload');
+  const name=$('up-name').value.trim(),desc=$('up-desc').value.trim(),cat=$('up-cat').value;
+  const price=num($('up-price').value),stock=num($('up-stock').value);
+  const errs=[];
+  if(!name)errs.push(['up-name','Enter an item name.']);
+  else if(name.length<2)errs.push(['up-name','Name must be at least 2 characters.']);
+  else if(name.length>40)errs.push(['up-name','Name must be 40 characters or fewer.']);
+  else if(ITEMS.some(i=>i.cat===cat&&i.name.toLowerCase()===name.toLowerCase()))errs.push(['up-name','“'+name+'” already exists in '+CAT_NAMES[cat]+'.']);
+  if(desc.length>80)errs.push(['up-desc','Keep the description under 80 characters ('+desc.length+' now).']);
+  if(!Number.isInteger(price)||price<1||price>99999)errs.push(['up-price',isNaN(price)?'Enter a price.':'Use a whole number from 1 to 99,999.']);
+  if(!Number.isInteger(stock)||stock<1||stock>99999)errs.push(['up-stock',isNaN(stock)?'Enter a stock quantity.':'Use a whole number from 1 to 99,999.']);
+  if(errs.length){failFields(errs);return}
+  const id=ITEMS.length?Math.max(...ITEMS.map(i=>i.id))+1:1;
+  ITEMS.push({id,cat,name,desc:desc||'New item',emoji:selectedEmoji,img:pendingImg,price,stock,sold:0,revenue:0});
+  save();closeModal('upload');renderAll();
+  toast('“'+name+'” added to '+CAT_NAMES[cat]);
+}
+
+function saveOffer(){
+  clearErrs('offer');
+  const name=$('off-name').value.trim(),itemId=$('off-item').value,msg=$('off-msg').value.trim();
+  const disc=num($('off-disc').value),type=$('off-type').value;
+  const start=$('off-start').value,end=$('off-end').value,t=todayStr();
+  const errs=[];
+  if(!name)errs.push(['off-name','Give the offer a name.']);
+  else if(name.length<2||name.length>40)errs.push(['off-name','Use 2–40 characters.']);
+  if(!ITEMS.length)errs.push(['off-item','Your catalogue is empty — add an item first.']);
+  if(!Number.isInteger(disc)||disc<1||disc>90)errs.push(['off-disc',isNaN(disc)?'Enter a discount.':'Use a whole number from 1 to 90.']);
+  if(!start)errs.push(['off-start','Pick a start date.']);
+  if(!end)errs.push(['off-end','Pick an end date.']);
+  else if(end<t)errs.push(['off-end','End date is in the past.']);
+  else if(start&&end<start)errs.push(['off-end','End date must be on or after the start date.']);
+  if(msg.length>80)errs.push(['off-msg','Keep the message under 80 characters ('+msg.length+' now).']);
+  if(!errs.length&&ITEMS.length){
+    const c=findConflict(itemId,start,end);
+    if(c)errs.push(['off-item','Already covered by “'+c.name+'” ('+c.start+' → '+c.end+'). End that offer first or change the dates.']);
+  }
+  if(errs.length){failFields(errs);return}
+  const offer={id:Date.now(),name,itemId,disc,type,start,end,msg,active:true,applied:false,units:0,revenue:0};
+  OFFERS.push(offer);
+  applyDueOffers();
+  save();closeModal('offer');renderAll();
+  toast(offer.applied
+    ?'“'+name+'” is live — '+offer.units+' units sold at '+disc+'% off ('+inr(offer.revenue)+')'
+    :'“'+name+'” scheduled to start on '+start);
+}
+
+function removeOffer(oid){
+  const o=OFFERS.find(x=>x.id===oid);if(!o)return;
+  o.active=false;save();renderAll();
+  toast('Offer ended. Sales already made at the discount stay in your totals.');
+}
+function deleteItem(id){
+  const it=ITEMS.find(i=>i.id===id);if(!it)return;
+  confirmDlg('Remove “'+it.name+'”?','It will be removed from the catalogue, and its sales will no longer count in your totals.','Remove',()=>{
+    ITEMS=ITEMS.filter(i=>i.id!==id);
+    OFFERS.forEach(o=>{if(String(o.itemId)===String(id))o.active=false});
+    save();renderAll();toast('Item removed');
+  });
+}
+function resetDemo(){
+  confirmDlg('Reset demo data?','This restores the 20 sample items, settings and team, and removes every offer and item you added in this browser.','Reset',()=>{
+    ITEMS=seedData();OFFERS=[];UI.cat='all';SETTINGS={...DEFAULT_SETTINGS};TEAM=seedTeam();save();applyBranding();syncPills();renderAll();renderSettings();renderTeam();toast('Demo data restored');
+  });
+}
+
+function setCat(cat){UI.cat=cat;save();syncPills();renderItems()}
+function syncPills(){document.querySelectorAll('#cat-pills .pill').forEach(p=>p.classList.toggle('active',p.dataset.cat===UI.cat))}
+
+/* ---------- rendering ---------- */
+function emptyState(icon,title,text,btns){
+  return`<div class="empty"><i class="ti ${icon}"></i><h3>${esc(title)}</h3><p>${esc(text)}</p><div class="row">${
+    btns.map(b=>`<button class="${b.primary?'btn-primary':'btn-cancel'}" onclick="${b.fn}">${esc(b.label)}</button>`).join('')}</div></div>`;
+}
+const thumbHTML=item=>item.img?`<img class="thumb-img" src="${item.img}" alt="${esc(item.name)}">`:`<span>${item.emoji}</span>`;
+
+function renderAll(){
+  renderItems();renderOffers();renderInventory();
+  if(UI.tab==='analytics')updateAnalytics();
+}
+
+function renderItems(){
+  const sort=$('sort-sel').value;
+  let items=UI.cat==='all'?[...ITEMS]:ITEMS.filter(i=>i.cat===UI.cat);
+  if(sort==='low')items.sort((a,b)=>a.price-b.price);
+  else if(sort==='high')items.sort((a,b)=>b.price-a.price);
+  else if(sort==='sold')items.sort((a,b)=>b.sold-a.sold);
+  else if(sort==='stock')items.sort((a,b)=>a.stock-b.stock);
+  if(!items.length){
+    $('item-grid').innerHTML=ITEMS.length
+      ?emptyState('ti-category-2','No '+CAT_NAMES[UI.cat].toLowerCase()+' yet','Upload your first one, or switch category to see the rest of your catalogue.',[{label:'Upload item',fn:"openModal('upload')",primary:true},{label:'Show all items',fn:"setCat('all')"}])
+      :emptyState('ti-package-off','Your catalogue is empty','Upload your first item to start selling, or bring back the sample catalogue.',[{label:'Upload item',fn:"openModal('upload')",primary:true},{label:'Restore demo data',fn:'resetDemo()'}]);
+    return;
+  }
+  $('item-grid').innerHTML=items.map(item=>{
+    const c=CC[item.cat],o=getOffer(item),dp=o?salePrice(item,o):null;
+    const stockTxt=item.stock>0?'Stock: '+item.stock:'<b style="color:var(--red-t)">Sold out</b>';
+    return`<div class="item-card">
+      <div class="item-thumb" style="background:${c.bg}">${thumbHTML(item)}${o?`<div class="offer-badge">${o.disc}% OFF</div>`:''}</div>
+      <div class="item-body">
+        <div class="item-cat" style="color:${c.text}">${item.cat.toUpperCase()}</div>
+        <div class="item-name">${esc(item.name)}</div>
+        <div class="item-stock">${stockTxt} · Sold: ${item.sold}</div>
+        <div class="item-foot">
+          <div class="item-price" style="color:${c.text}">${inr(dp||item.price)}${o?`<s>${inr(item.price)}</s>`:''}</div>
+          <div class="row-btns">
+            <button class="icon-btn${o?' promo-on':''}" onclick="openModal('offer',${item.id})"><i class="ti ti-tag"></i>${o?'On':'Promote'}</button>
+            <button class="icon-btn danger" onclick="deleteItem(${item.id})" title="Delete ${esc(item.name)}" aria-label="Delete ${esc(item.name)}"><i class="ti ti-trash"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderOffers(){
+  const live=OFFERS.filter(o=>offerStatus(o)==='live');
+  $('off-cnt').textContent=live.length;
+  $('off-avg').textContent=(live.length?Math.round(live.reduce((a,o)=>a+o.disc,0)/live.length):0)+'%';
+  const rev=OFFERS.reduce((a,o)=>a+(o.revenue||0),0),units=OFFERS.reduce((a,o)=>a+(o.units||0),0);
+  $('off-rev').textContent=inr(rev);
+  $('off-rev-sub').textContent=units.toLocaleString('en-IN')+' units sold via offers';
+  if(!OFFERS.length){
+    $('offers-grid').innerHTML=emptyState('ti-tag-off','No offers yet','Run a flash sale or a store-wide discount. Sales made through an offer show up here and in Analytics.',[{label:'Create offer',fn:"openModal('offer')",primary:true}]);
+    return;
+  }
+  const lbl={live:'LIVE',scheduled:'SCHEDULED',ended:'ENDED'};
+  $('offers-grid').innerHTML=[...OFFERS].reverse().map(o=>{
+    const st=offerStatus(o);
+    const item=o.itemId==='all'?null:ITEMS.find(i=>String(i.id)===String(o.itemId));
+    const where=o.itemId==='all'?'All items':item?esc(item.name):'Deleted item';
+    return`<div class="offer-card${st==='ended'?' off':''}">
+      <div class="offer-head">
+        <div><div class="offer-name">${esc(o.name)}</div><div class="offer-sub">${esc(o.type)} · ${where}</div></div>
+        <span class="offer-status ${st==='live'?'os-on':st==='scheduled'?'os-sch':'os-off'}">${lbl[st]}</span>
+      </div>
+      <div class="offer-meta">
+        Discount: <b>${o.disc}%</b><br>
+        Duration: <b>${esc(o.start)} → ${esc(o.end)}</b><br>
+        ${o.msg?`Message: <b>${esc(o.msg)}</b><br>`:''}
+        Sales via offer: <b>${(o.units||0).toLocaleString('en-IN')} units · ${inr(o.revenue||0)}</b>
+      </div>
+      ${st!=='ended'?`<div class="offer-actions"><button class="icon-btn danger" onclick="removeOffer(${o.id})"><i class="ti ti-x"></i>End offer</button></div>`:''}
+    </div>`;
+  }).join('');
+}
+
+const DEMO={
+  gender:{Male:.52,Female:.38,'Non-binary':.07,'N/A':.03},
+  age:{'13–18':.18,'19–25':.34,'26–35':.28,'36–50':.14,'50+':.06},
+  zodiac:{Leo:.12,Aries:.10,Gemini:.10,Aquarius:.10,Sagittarius:.10,Libra:.09,Scorpio:.09,Taurus:.08,Cancer:.08,Virgo:.08,Capricorn:.07,Pisces:.08},
+  place:{Mumbai:.22,Delhi:.18,Bangalore:.16,Hyderabad:.12,Chennai:.10,Kolkata:.08,Pune:.07,Ahmedabad:.07},
+};
+
+function multVal(){
+  const mA={all:1,'13-18':.72,'19-25':1,'26-35':.88,'36-50':.61,'50+':.32};
+  const mG={all:1,male:.54,female:.44,nonbinary:.12,'prefer-not':.08};
+  const mM={all:1,single:.58,married:.38,divorced:.12,widowed:.04};
+  const mZ={all:1,Aries:.1,Taurus:.09,Gemini:.1,Cancer:.08,Leo:.12,Virgo:.08,Libra:.09,Scorpio:.09,Sagittarius:.1,Capricorn:.07,Aquarius:.1,Pisces:.08};
+  return Math.max(0.01,(mA[$('f-age').value]||1)*(mG[$('f-gender').value]||1)*(mM[$('f-marital').value]||1)*(mZ[$('f-zodiac').value]||0.08));
+}
+
+function miniBar(data,color){
+  const max=Math.max(...Object.values(data));
+  return Object.entries(data).map(([k,v])=>`
+    <div class="mini-bar-row">
+      <div class="mini-bar-label">${k}</div>
+      <div class="mini-bar-track"><div class="mini-bar-fill" style="width:${Math.round(v/max*100)}%;background:${color}"></div></div>
+      <div class="mini-bar-pct">${Math.round(v*100)}%</div>
+    </div>`).join('');
+}
+
+function drawCharts(data){
+  const fail=typeof Chart==='undefined';
+  document.querySelectorAll('.chart-fail').forEach(e=>e.hidden=!fail);
+  document.querySelectorAll('#bar-chart,#donut-chart').forEach(c=>c.style.display=fail?'none':'');
+  if(fail)return;
+  const labs=CATS.map(c=>CAT_NAMES[c]);
+  if(barChart)barChart.destroy();
+  barChart=new Chart($('bar-chart'),{
+    type:'bar',
+    data:{labels:labs,datasets:[{label:'₹ Revenue',data:data.map(d=>d.revenue),backgroundColor:CATS.map(c=>CC[c].fill+'CC'),borderRadius:6,borderSkipped:false}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{
+      x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#9494AA',font:{family:'Inter',size:11}}},
+      y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#9494AA',font:{family:'Inter',size:11},callback:v=>inr(v)}}
+    }}
+  });
+  if(donutChart)donutChart.destroy();
+  donutChart=new Chart($('donut-chart'),{
+    type:'doughnut',
+    data:{labels:labs,datasets:[{data:data.map(d=>d.sold),backgroundColor:CATS.map(c=>CC[c].fill),borderWidth:3,borderColor:'#1E1E28'}]},
+    options:{responsive:true,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:'#9494AA',font:{family:'Inter',size:12},padding:12,usePointStyle:true}}}}
+  });
+}
+
+function updateAnalytics(){
+  const empty=ITEMS.length===0;
+  $('an-empty').innerHTML=empty?emptyState('ti-chart-off','No sales data yet','Analytics appear once your catalogue has items. Upload an item or bring back the sample catalogue.',[{label:'Upload item',fn:"openModal('upload')",primary:true},{label:'Restore demo data',fn:'resetDemo()'}]):'';
+  $('an-body').style.display=empty?'none':'';
+  const mult=multVal();
+  const data=CATS.map(cat=>{
+    const its=ITEMS.filter(i=>i.cat===cat);
+    const rawSold=its.reduce((a,i)=>a+i.sold,0);
+    return{cat,rawSold,sold:rawSold?Math.max(1,Math.round(rawSold*mult)):0,
+      revenue:Math.round(its.reduce((a,i)=>a+i.revenue,0)*mult),
+      stock:its.reduce((a,i)=>a+i.stock,0),items:its.length};
+  });
+  const tRev=data.reduce((a,d)=>a+d.revenue,0),tSold=data.reduce((a,d)=>a+d.sold,0);
+  const promoRev=Math.round(OFFERS.reduce((a,o)=>a+(o.revenue||0),0)*mult);
+  const promoUnits=Math.round(OFFERS.reduce((a,o)=>a+(o.units||0),0)*mult);
+  const low=ITEMS.filter(i=>i.stock<SETTINGS.lowStock).length;
+  $('an-rev').textContent=inr(tRev);
+  $('an-sold').textContent=tSold.toLocaleString('en-IN');
+  $('an-aov').textContent=tSold?inr(tRev/tSold):'—';
+  $('an-stk').textContent=data.reduce((a,d)=>a+d.stock,0).toLocaleString('en-IN');
+  $('an-rev-sub').textContent=inr(promoRev)+' from promotions';
+  $('an-sold-sub').textContent=promoUnits.toLocaleString('en-IN')+' sold via promotions';
+  $('an-aov-sub').textContent='Revenue ÷ units sold';
+  $('an-stk-sub').textContent=low?low+(low===1?' item':' items')+' under '+SETTINGS.lowStock+' in stock':'All items well stocked';
+  $('an-stk-sub').className='stat-change '+(low?'trend-dn':'trend-up');
+  if(empty)return;
+  drawCharts(data);
+
+  $('breakdown-body').innerHTML=data.map(d=>{
+    const col=CC[d.cat],name=CAT_NAMES[d.cat];
+    const pct=(d.rawSold+d.stock)?Math.round(d.rawSold/(d.rawSold+d.stock)*100):0;
+    const head=`<td>
+        <span style="display:flex;align-items:center;gap:7px">
+          <span style="width:9px;height:9px;border-radius:50%;background:${col.fill};flex-shrink:0;display:inline-block"></span>
+          <strong style="font-size:13px">${name}</strong>
+        </span>
+        <div class="prog"><div class="prog-fill" style="width:${pct}%;background:${col.fill}"></div></div>
+        <div style="font-size:10px;color:var(--text3);margin-top:3px">${pct}% sell-through</div>
+      </td>
+      <td style="vertical-align:middle">
+        <div style="font-size:15px;font-weight:700">${d.sold.toLocaleString('en-IN')}</div>
+        <div style="font-size:10px;color:var(--text3)">${d.items} ${d.items===1?'item':'items'}</div>
+      </td>
+      <td style="vertical-align:middle;font-weight:700;color:${col.text};font-size:14px">${inr(d.revenue)}</td>`;
+    if(!d.sold)return`<tr>${head}<td colspan="4" style="vertical-align:middle;color:var(--text3)">${d.items?'No sales in this category yet.':'No items in this category yet.'}</td></tr>`;
+    const seed=d.cat.charCodeAt(0);
+    const skew=v=>Math.min(.99,Math.max(.01,v*(0.75+((seed*7+v*100)%50)/100)));
+    const mk=(src,n)=>Object.fromEntries(Object.entries(src).slice(0,n||99).map(([k,v])=>[k,skew(v)]));
+    const gData=mk(DEMO.gender),aData=mk(DEMO.age),zData=mk(DEMO.zodiac,5),pData=mk(DEMO.place,4);
+    const topOf=obj=>Object.entries(obj).sort((a,b)=>b[1]-a[1])[0];
+    const cell=obj=>{const t=topOf(obj);return`<td>
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:5px">${t[0]} — ${Math.round(t[1]*100)}%</div>
+        ${miniBar(obj,col.fill)}
+      </td>`};
+    return`<tr>${head}${cell(gData)}${cell(aData)}${cell(zData)}${cell(pData)}</tr>`;
+  }).join('');
+}
+
+function renderInventory(){
+  $('inv-total').textContent=ITEMS.length+(ITEMS.length===1?' item':' items');
+  if(!ITEMS.length){
+    $('inv-body').innerHTML=`<tr><td colspan="10" style="padding:0">${emptyState('ti-package-off','No inventory yet','Add your first item to track stock, sales and revenue here.',[{label:'Add item',fn:"openModal('upload')",primary:true},{label:'Restore demo data',fn:'resetDemo()'}])}</td></tr>`;
+    return;
+  }
+  $('inv-body').innerHTML=ITEMS.map(item=>{
+    const c=CC[item.cat],o=getOffer(item);
+    const st=item.stock<SETTINGS.lowStock?'low':item.stock<SETTINGS.lowStock*2.4?'med':'high';
+    const stL=item.stock===0?'Sold out':{low:'Low stock',med:'Moderate',high:'In stock'}[st];
+    const mini=item.img?`<img class="inv-img" src="${item.img}" alt="">`:`<span style="font-size:20px">${item.emoji}</span>`;
+    return`<tr>
+      <td><span style="display:flex;align-items:center;gap:9px">
+        ${mini}
+        <span><div style="font-weight:600;font-size:13px">${esc(item.name)}</div><div style="font-size:10px;color:var(--text3)">${esc(item.desc)}</div></span>
+      </span></td>
+      <td><span style="background:${c.bg};color:${c.text};padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700">${item.cat}</span></td>
+      <td style="font-weight:600;color:${c.text}">${inr(item.price)}</td>
+      <td style="color:var(--text2)">${o?inr(salePrice(item,o)):'—'}</td>
+      <td>${o?`<span style="background:var(--amber-d);color:var(--amber-t);font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px">${o.disc}% OFF</span>`:`<span style="color:var(--text3);font-size:11px">No offer</span>`}</td>
+      <td>${item.stock}</td><td>${item.sold}</td>
+      <td style="font-weight:600">${inr(item.revenue)}</td>
+      <td><span class="stock-badge stock-${st}">${stL}</span></td>
+      <td><div style="display:flex;gap:5px">
+        <button class="icon-btn" onclick="openModal('offer',${item.id})" title="Create promo" aria-label="Create promo for ${esc(item.name)}"><i class="ti ti-tag"></i></button>
+        <button class="icon-btn danger" onclick="deleteItem(${item.id})" title="Delete" aria-label="Delete ${esc(item.name)}"><i class="ti ti-trash"></i></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function gotoTab(tab){
+  if(TABS.indexOf(tab)<0)tab='items';
+  UI.tab=tab;save();
+  TABS.forEach(p=>{
+    $('panel-'+p).classList.toggle('active',p===tab);
+    $('tb-'+p).classList.toggle('active',p===tab);
+  });
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.tab===tab));
+  $('pg-title').textContent=TITLES[tab][0];
+  $('pg-sub').textContent=TITLES[tab][1];
+  if(tab==='analytics')updateAnalytics();
+  if(tab==='inventory')renderInventory();
+  if(tab==='offers')renderOffers();
+  if(tab==='settings')renderSettings();
+  if(tab==='team')renderTeam();
+  const b=$('tb-'+tab),r=b.parentElement;
+  if(r.scrollWidth>r.clientWidth)r.scrollLeft=Math.max(0,b.getBoundingClientRect().left-r.getBoundingClientRect().left+r.scrollLeft-16);
+}
+
+/* ---------- branding, settings, team, sharing ---------- */
+function logoHTML(n){
+  const m=n.match(/^(\S+)\s+(.+)$/);
+  return m?esc(m[1])+'<span>'+esc(m[2])+'</span>':n==='GameStore'?'Game<span>Store</span>':esc(n);
+}
+function applyBranding(){
+  document.querySelector('.logo-mark').innerHTML=logoHTML(SETTINGS.storeName);
+  document.title=SETTINGS.storeName+' — Owner Dashboard';
+}
+function renderSettings(){
+  ['st-name','st-email','st-low','st-days'].forEach(f=>setErr(f,''));
+  $('st-name').value=SETTINGS.storeName;$('st-email').value=SETTINGS.email;
+  $('st-low').value=SETTINGS.lowStock;$('st-days').value=SETTINGS.offerDays;
+}
+function saveSettings(e){
+  e.preventDefault();
+  const name=$('st-name').value.trim(),email=$('st-email').value.trim();
+  const low=num($('st-low').value),days=num($('st-days').value),errs=[];
+  if(!name)errs.push(['st-name','Enter a store name.']);
+  else if(name.length<2||name.length>30)errs.push(['st-name','Use 2–30 characters.']);
+  if(email&&!EMAIL_RE.test(email))errs.push(['st-email','Enter a valid email, like name@company.com.']);
+  if(!Number.isInteger(low)||low<1||low>999)errs.push(['st-low',isNaN(low)?'Enter a number.':'Use a whole number from 1 to 999.']);
+  if(!Number.isInteger(days)||days<1||days>90)errs.push(['st-days',isNaN(days)?'Enter a number of days.':'Use a whole number from 1 to 90.']);
+  if(errs.length){failFields(errs);return}
+  SETTINGS={storeName:name,email,lowStock:low,offerDays:days};
+  save();applyBranding();renderAll();toast('Settings saved');
+}
+
+const initials=n=>n.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('')||'?';
+function renderTeam(){
+  $('team-count').textContent=TEAM.length+(TEAM.length===1?' member':' members');
+  $('team-body').innerHTML=TEAM.map(m=>{
+    const owner=m.role==='Owner';
+    const roleCell=owner?'<span class="role-fixed">Owner</span>'
+      :`<select class="sel" aria-label="Role for ${esc(m.name)}" onchange="setRole(${m.id},this.value)">${Object.keys(ROLES).filter(r=>r!=='Owner').map(r=>`<option${r===m.role?' selected':''}>${r}</option>`).join('')}</select>`;
+    return`<tr>
+      <td><span style="display:flex;align-items:center;gap:10px"><span class="avatar">${esc(initials(m.name))}</span><span><div style="font-weight:600;font-size:13px">${esc(m.name)}</div><div style="font-size:11px;color:var(--text3)">${esc(m.email)}</div></span></span></td>
+      <td>${roleCell}</td>
+      <td><span class="offer-status ${m.status==='active'?'os-on':'os-sch'}">${m.status==='active'?'ACTIVE':'INVITED'}</span></td>
+      <td>${owner?'':`<button class="icon-btn danger" onclick="removeMember(${m.id})" title="Remove" aria-label="Remove ${esc(m.name)}"><i class="ti ti-trash"></i></button>`}</td>
+    </tr>`;
+  }).join('');
+  $('team-empty').innerHTML=TEAM.length<=1?emptyState('ti-users-plus','Invite your marketing and business teams','Give them access to sales and analytics so they can plan campaigns from real numbers.',[{label:'Invite member',fn:"openModal('invite')",primary:true}]):'';
+  $('roles-list').innerHTML=Object.entries(ROLES).map(([r,d])=>`<div class="role-row"><b>${r}</b><span>${d}</span></div>`).join('');
+}
+function roleHint(){$('inv-role-hint').textContent=ROLES[$('inv-role').value]||''}
+function setRole(id,role){
+  const m=TEAM.find(x=>x.id===id);
+  if(!m||m.role==='Owner'||!ROLES[role]||role==='Owner')return;
+  m.role=role;save();toast(m.name+' is now '+role);
+}
+function removeMember(id){
+  const m=TEAM.find(x=>x.id===id);if(!m||m.role==='Owner')return;
+  confirmDlg('Remove '+m.name+'?','They will lose access to this dashboard.','Remove',()=>{
+    TEAM=TEAM.filter(x=>x.id!==id);save();renderTeam();toast(m.name+' removed');
+  });
+}
+function sendInvite(){
+  clearErrs('invite');
+  const name=$('inv-name').value.trim(),email=$('inv-email').value.trim(),role=$('inv-role').value,errs=[];
+  if(!name)errs.push(['inv-name','Enter the person’s name.']);
+  else if(name.length<2||name.length>40)errs.push(['inv-name','Use 2–40 characters.']);
+  if(!email)errs.push(['inv-email','Enter an email address.']);
+  else if(!EMAIL_RE.test(email))errs.push(['inv-email','Enter a valid email, like name@company.com.']);
+  else if(TEAM.some(m=>m.email.toLowerCase()===email.toLowerCase()))errs.push(['inv-email','That email is already on the team.']);
+  if(!ROLES[role]||role==='Owner')errs.push(['inv-role','Pick a role.']);
+  if(errs.length){failFields(errs);return}
+  const id=TEAM.length?Math.max(...TEAM.map(m=>m.id))+1:1;
+  TEAM.push({id,name,email,role,status:'invited'});
+  save();closeModal('invite');renderTeam();
+  toast('Invite saved for '+name+' (prototype — no email is sent)');
+}
+
+function csvCell(v){
+  let s=String(v==null?'':v);
+  if(/^[=+\-@]/.test(s))s="'"+s; // stop spreadsheet formula injection
+  return /[",\r\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+}
+function exportCSV(){
+  if(!ITEMS.length){toast('Nothing to export yet — add an item first.','warn');return}
+  const rows=[['Item','Category','Price','Live offer %','Stock','Units sold','Revenue']];
+  ITEMS.forEach(i=>{const o=getOffer(i);rows.push([i.name,i.cat,i.price,o?o.disc:0,i.stock,i.sold,i.revenue])});
+  const csv='﻿'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='sales-report-'+todayStr()+'.csv';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+  toast('Sales report downloaded');
+}
+function copyLink(){
+  const url=location.href.split('#')[0];
+  const done=()=>toast('Link copied — paste it to your marketing or business team');
+  const fallback=()=>{
+    const t=document.createElement('textarea');t.value=url;document.body.appendChild(t);t.select();
+    try{document.execCommand('copy');done()}catch(e){toast('Couldn’t copy — copy the address from your browser bar.','warn')}
+    t.remove();
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(done,fallback);else fallback();
+}
+
+/* ---------- global listeners ---------- */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+  if(e.key==='Enter'&&e.target.matches&&e.target.matches('.modal input:not([type=file])')){
+    e.preventDefault();const b=e.target.closest('.modal').querySelector('.btn-primary');if(b)b.click();
+  }
+});
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('mousedown',e=>{if(e.target===o)o.classList.remove('open')}));
+['input','change'].forEach(ev=>document.addEventListener(ev,e=>{
+  const t=e.target;if(t&&t.id&&$('err-'+t.id)&&t.id!=='file-inp')setErr(t.id,'');
+}));
+$('file-inp').addEventListener('change',e=>{handleFile(e.target.files&&e.target.files[0])});
+$('inv-role').addEventListener('change',roleHint);
+
+/* ---------- boot ---------- */
+load();
+if(CATS.concat('all').indexOf(UI.cat)<0)UI.cat='all';
+if(applyDueOffers())save();
+applyBranding();renderAll();syncPills();gotoTab(UI.tab);
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GameStore — Owner Dashboard</title>
+<meta name="description" content="Owner-facing store dashboard prototype: catalogue, offers, analytics and inventory (mock data).">
+<meta name="theme-color" content="#0F0F14">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0F0F14;--sidebar:#17171F;--card:#1E1E28;--card2:#252531;
+  --border:#2A2A38;--text:#F0F0F8;--text2:#9494AA;--text3:#5A5A70;
+  --purple:#534AB7;--purple-d:#241F5A;--purple-t:#A29DF5;
+  --green:#1D9E75;--green-d:#0B3A29;--green-t:#5DCAA5;
+  --red:#D85A30;--red-d:#3A1A0B;--red-t:#F0997B;
+  --blue:#378ADD;--blue-d:#17274A;--blue-t:#85B7EB;
+  --amber:#EF9F27;--amber-d:#3A1F0B;--amber-t:#FAC775;
+  --radius:12px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;font-size:14px}
+.sidebar{width:224px;min-width:224px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo{padding:22px 20px 18px;border-bottom:1px solid var(--border)}
+.logo-mark{font-size:17px;font-weight:700;color:var(--text);letter-spacing:-.5px}
+.logo-mark span{color:var(--purple-t)}
+.logo-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.nav{padding:14px 10px;flex:1}
+.nav-sec{font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--text3);padding:0 10px;margin:18px 0 7px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;color:var(--text2);font-size:13px;font-weight:500;transition:all .15s;margin-bottom:2px}
+.nav-item i{font-size:16px}
+.nav-item:hover{background:var(--card);color:var(--text)}
+.nav-item.active{background:var(--purple-d);color:var(--purple-t)}
+.main{flex:1;overflow-y:auto;min-width:0}
+.topbar{background:var(--sidebar);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.page-title{font-size:15px;font-weight:600}
+.page-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.topbar-chips{display:flex;align-items:center;gap:10px}
+.chip{background:var(--card);border:1px solid var(--border);color:var(--text2);font-size:12px;font-weight:500;padding:5px 12px;border-radius:99px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;font-family:'Inter',sans-serif}
+.chip:hover{border-color:var(--purple);color:var(--purple-t)}
+.chip-accent{background:var(--purple-d);border-color:var(--purple);color:var(--purple-t)}
+.content{padding:28px}
+.tab-row{display:flex;gap:4px;background:var(--card);padding:4px;border-radius:10px;margin-bottom:28px;width:fit-content}
+.tab-btn{padding:8px 18px;border-radius:7px;border:none;background:transparent;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px}
+.tab-btn.active{background:var(--sidebar);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.5)}
+.tab-btn:hover:not(.active){color:var(--text)}
+.panel{display:none}.panel.active{display:block}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.stat-label{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.stat-val{font-size:26px;font-weight:700}
+.stat-change{font-size:12px;margin-top:4px}
+.trend-up{color:var(--green-t)}.trend-dn{color:var(--red-t)}
+.toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.cat-pills{display:flex;gap:8px;flex-wrap:wrap;flex:1}
+.pill{padding:6px 14px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
+.pill.active,.pill:hover{border-color:var(--purple);color:var(--purple-t)}
+.pill.active{background:var(--purple-d)}
+select.sel{background:var(--card2);border:1px solid var(--border);color:var(--text2);padding:7px 12px;border-radius:8px;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;outline:none}
+.item-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.item-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .15s;position:relative}
+.item-card:hover{border-color:#5A5A70}
+.item-thumb{height:128px;display:flex;align-items:center;justify-content:center;font-size:50px;position:relative}
+.offer-badge{position:absolute;top:10px;right:10px;background:#B94A0B;color:#FFCBA4;font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;letter-spacing:.5px}
+.item-body{padding:14px}
+.item-cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.item-name{font-size:13px;font-weight:600;margin-bottom:3px}
+.item-stock{font-size:11px;color:var(--text3);margin-bottom:10px}
+.item-foot{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.item-price{font-size:14px;font-weight:700}
+.item-price s{font-size:10px;color:var(--text3);font-weight:400;margin-left:3px}
+.row-btns{display:flex;gap:5px}
+.icon-btn{background:var(--card2);border:1px solid var(--border);color:var(--text2);padding:6px 9px;border-radius:7px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:4px;font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap}
+.icon-btn:hover{border-color:var(--purple);color:var(--purple-t)}
+.icon-btn.danger:hover{border-color:var(--red);color:var(--red-t)}
+.icon-btn.promo-on{background:var(--amber-d);border-color:var(--amber);color:var(--amber-t)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto}
+.modal-head{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:14px;font-weight:600}
+.modal-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:20px;padding:2px;line-height:1}
+.modal-body{padding:22px 24px}
+.form-row{margin-bottom:16px}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.form-label{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:7px;display:block;text-transform:uppercase;letter-spacing:.8px}
+.form-input{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:9px 13px;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s}
+.form-input:focus{border-color:var(--purple)}
+.modal-foot{padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+.btn-cancel{background:var(--card2);border:1px solid var(--border);color:var(--text2);padding:8px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-family:'Inter',sans-serif}
+.btn-primary{background:var(--purple);border:none;color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter',sans-serif}
+.btn-primary:hover{opacity:.88}
+.upload-zone{border:2px dashed var(--border);border-radius:10px;padding:28px;text-align:center;cursor:pointer;transition:border-color .15s}
+.upload-zone:hover{border-color:var(--purple)}
+.upload-zone i{font-size:30px;color:var(--text3);display:block;margin-bottom:10px}
+.upload-zone p{font-size:13px;color:var(--text2)}
+.emoji-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;max-height:110px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:8px}
+.emoji-opt{padding:5px;border-radius:5px;cursor:pointer;text-align:center;font-size:18px;border:2px solid transparent;transition:all .15s}
+.emoji-opt.selected,.emoji-opt:hover{border-color:var(--purple);background:var(--purple-d)}
+.filter-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:22px}
+.filter-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.filter-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.fg label{font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px}
+.fg select{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:12px;font-family:'Inter',sans-serif;outline:none;cursor:pointer}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.chart-ttl{font-size:13px;font-weight:600;margin-bottom:2px}
+.chart-sub{font-size:11px;color:var(--text3);margin-bottom:14px}
+.sec-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:22px}
+.sec-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sec-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.2px;background:var(--card2);border-bottom:1px solid var(--border)}
+td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.015)}
+.prog{height:4px;background:var(--card2);border-radius:99px;overflow:hidden;margin-top:5px;min-width:50px}
+.prog-fill{height:100%;border-radius:99px}
+.mini-bar-row{display:flex;align-items:center;gap:5px;margin-bottom:3px}
+.mini-bar-label{font-size:10px;color:var(--text2);width:54px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-bar-track{flex:1;height:3px;background:var(--card2);border-radius:99px;overflow:hidden}
+.mini-bar-fill{height:100%;border-radius:99px}
+.mini-bar-pct{font-size:10px;color:var(--text3);width:26px;text-align:right}
+.stock-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;display:inline-block}
+.stock-high{background:var(--green-d);color:var(--green-t)}
+.stock-med{background:var(--amber-d);color:var(--amber-t)}
+.stock-low{background:var(--red-d);color:var(--red-t)}
+.offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.offer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;border-left:4px solid var(--amber)}
+.offer-card.off{border-left-color:var(--border);opacity:.55}
+.offer-name{font-size:14px;font-weight:600;margin-bottom:2px}
+.offer-sub{font-size:11px;color:var(--text3)}
+.offer-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.offer-status{font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px}
+.os-on{background:var(--green-d);color:var(--green-t)}
+.os-off{background:var(--card2);color:var(--text3)}
+.offer-meta{font-size:12px;color:var(--text2);line-height:1.75}
+.offer-meta b{color:var(--text);font-weight:600}
+.offer-actions{margin-top:12px;display:flex;gap:8px}
+@media(max-width:900px){.sidebar{display:none}.stat-row{grid-template-columns:1fr 1fr}.chart-row{grid-template-columns:1fr}.filter-row{grid-template-columns:1fr 1fr}}
+
+/* ---- prototype additions ---- */
+.proto-banner{background:var(--amber-d);color:var(--amber-t);font-size:12px;padding:8px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid #5A3A10}
+.proto-banner button{margin-left:auto;background:transparent;border:1px solid var(--amber);color:var(--amber-t);border-radius:99px;padding:3px 12px;font-size:11px;cursor:pointer;font-family:inherit}
+.proto-banner button:hover{background:rgba(239,159,39,.15)}
+.thumb-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.offer-badge{z-index:2}
+.inv-img{width:30px;height:30px;border-radius:6px;object-fit:cover;flex-shrink:0;border:1px solid var(--border)}
+.os-sch{background:var(--blue-d);color:var(--blue-t)}
+.offer-result{display:none}
+.hint{text-transform:none;letter-spacing:0;font-weight:400;color:var(--text3)}
+.err{color:var(--red-t);font-size:11px;margin-top:6px;line-height:1.4}
+.err:empty{display:none}
+.form-input.invalid{border-color:var(--red)}
+.upload-zone.invalid{border-color:var(--red)}
+.upload-zone.drag{border-color:var(--purple);background:var(--purple-d)}
+.upload-zone:focus-visible,.form-input:focus-visible,.icon-btn:focus-visible,.pill:focus-visible,.tab-btn:focus-visible,.chip:focus-visible{outline:2px solid var(--purple-t);outline-offset:2px}
+.file-preview{margin-top:10px;align-items:center;justify-content:center;gap:12px}
+.file-preview img{max-height:70px;max-width:120px;border-radius:8px;border:1px solid var(--border);object-fit:cover}
+.modal-sm{width:380px}
+.empty{grid-column:1/-1;text-align:center;padding:44px 20px;border:1px dashed var(--border);border-radius:var(--radius);background:var(--card)}
+.empty i{font-size:34px;color:var(--text3)}
+.empty h3{font-size:14px;font-weight:600;margin:10px 0 4px}
+.empty p{font-size:12px;color:var(--text3);max-width:340px;margin:0 auto 16px;line-height:1.55}
+.empty .row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.chart-fail{font-size:12px;color:var(--text3);padding:24px 0;text-align:center}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:10px;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:all .2s;z-index:300;max-width:min(92vw,480px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.warn{border-color:var(--amber);color:var(--amber-t)}
+.chart-card,.sec-wrap,.stat-card,.filter-card,.chart-row>*{min-width:0}
+.offers-grid{grid-template-columns:repeat(auto-fill,minmax(min(270px,100%),1fr))}
+.stat-row-3{grid-template-columns:repeat(3,1fr)}
+table.wide{min-width:780px}
+table.wide td:first-child{min-width:190px}
+table.breakdown{min-width:920px}
+.empty-cell{padding:0}
+
+@media(max-width:900px){
+  .topbar{padding:12px 16px;flex-wrap:wrap;gap:10px}
+  .proto-banner{padding:8px 16px}
+  .content{padding:16px}
+  .tab-row{width:100%;overflow-x:auto;margin-bottom:20px}
+  .tab-btn{flex:1;justify-content:center;white-space:nowrap;padding:8px 12px}
+}
+@media(max-width:560px){
+  .stat-row,.stat-row-3{grid-template-columns:1fr 1fr;gap:10px}
+  .stat-row-3 .stat-card:last-child{grid-column:1/-1}
+  .stat-card{padding:14px}
+  .stat-val{font-size:21px}
+  .filter-row{grid-template-columns:1fr 1fr;gap:10px}
+  .toolbar{gap:10px}
+  .cat-pills{flex:1 1 100%;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+  .pill{white-space:nowrap}
+  select.sel{width:100%}
+  .item-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .item-thumb{height:96px;font-size:40px}
+  .item-body{padding:12px}
+  .item-foot{flex-direction:column;align-items:stretch;gap:8px}
+  .row-btns .icon-btn{flex:1;justify-content:center}
+  .form-row-2{grid-template-columns:1fr;gap:0}
+  .form-row-2>div{margin-bottom:16px}
+  .emoji-grid{grid-template-columns:repeat(6,1fr)}
+  .modal-overlay{align-items:flex-end}
+  .modal,.modal-sm{width:100%;max-width:100%;max-height:92dvh;border-radius:16px 16px 0 0}
+  .modal-head,.modal-body,.modal-foot{padding-left:18px;padding-right:18px}
+  .topbar-chips{width:100%}
+  .topbar-chips .chip{flex:1;justify-content:center}
+  .toast{bottom:16px}
+}
 </style>
 </head>
 <body>
